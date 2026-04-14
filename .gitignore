@@ -1,0 +1,12 @@
+/log/*
+/tmp/*
+/storage/*
+/public/assets
+.env
+.env.*
+*.sqlite3
+*.sqlite3-journal
+.DS_Store
+.vscode/
+.idea/
+node_modules/
