@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# bin/feedback_consumer
+# Uso: bundle exec ruby bin/feedback_consumer
+# Inicia o loop de ingestão de feedbacks do Redis.
+
+require_relative "../config/environment"
+
+FeedbackIngestionWorker.new.run!
