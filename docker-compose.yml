@@ -105,6 +105,28 @@ services:
         condition: service_started
     restart: unless-stopped
 
+  event_consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: bash -c "bundle check || bundle install && bundle exec ruby bin/event_consumer"
+    volumes:
+      - .:/rails
+      - bundle_cache:/usr/local/bundle
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgres://stratify:stratify_secret@db:5432/stratify_core_development
+      REDIS_URL: redis://redis:6379/0
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      core:
+        condition: service_started
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   redis_data:
