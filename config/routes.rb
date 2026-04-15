@@ -7,7 +7,7 @@ Rails.application.routes.draw do
         resources :feedbacks, only: [:index]
       end
 
-      get "health", to: proc { [200, {}, [{ status: "ok", version: "0.1.0-beta.1" }.to_json]] }
+      get "health", to: proc { [200, {}, [{ status: "ok", version: "0.1.0-beta.3" }.to_json]] }
     end
   end
 end
