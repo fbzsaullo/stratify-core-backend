@@ -36,7 +36,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails server -b 0.0.0.0"
+    command: bash -c "rm -f tmp/pids/server.pid && bundle check || bundle install && bundle exec rails db:prepare && bundle exec rails server -b 0.0.0.0"
     volumes:
       - .:/rails
       - bundle_cache:/usr/local/bundle
@@ -87,7 +87,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: bash -c "bundle exec ruby bin/feedback_consumer"
+    command: bash -c "bundle check || bundle install && bundle exec ruby bin/feedback_consumer"
     volumes:
       - .:/rails
       - bundle_cache:/usr/local/bundle
