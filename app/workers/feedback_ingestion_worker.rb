@@ -92,8 +92,7 @@ class FeedbackIngestionWorker
       raw_payload:      payload
     )
 
-    # Broadcast Live Coach Tip
-    ActionCable.server.broadcast("live_coach_global", {
+    payload_data = {
       id: fb.id,
       analyzer: fb.analyzer,
       severity: payload["severity"] || "warning",
@@ -102,8 +101,12 @@ class FeedbackIngestionWorker
       description: fb.description,
       actionable_tip: fb.actionable_tip,
       confidence_score: fb.confidence_score
-    })
+    }
+
+    # Broadcast Live Coach Tip
+    ActionCable.server.broadcast("live_coach_global", payload_data)
 
     Rails.logger.info("[FeedbackIngestionWorker] Ingested & Broadcasted: #{fb.title}")
+    Rails.logger.debug("[LiveCoach] Broadcast Payload: #{payload_data.to_json}")
   end
 end
