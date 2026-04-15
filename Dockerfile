@@ -14,8 +14,8 @@ RUN apt-get update -qq && \
 
 WORKDIR /rails
 
-# Gems
-COPY Gemfile Gemfile.lock ./
+# Copy Gemfile only (lock may not exist yet)
+COPY Gemfile ./
 RUN bundle install --jobs 4 --retry 3
 
 # Copy app

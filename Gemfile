@@ -7,16 +7,15 @@ gem "rails", "~> 7.1"
 gem "pg", "~> 1.5"
 gem "puma", ">= 5.0"
 gem "redis", "~> 5.0"
+gem "connection_pool", "~> 2.4"
+gem "rack-cors"
 
-# Auth
+# Auth (Fase 2.5)
 gem "devise"
 gem "devise-jwt"
 
 # Serialization
 gem "jsonapi-serializer"
-
-# Event Bus consumer
-gem "redis-client"
 
 # Schema Validation
 gem "dry-schema"
