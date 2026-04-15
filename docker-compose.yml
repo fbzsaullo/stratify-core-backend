@@ -69,6 +69,20 @@ services:
         condition: service_started
     restart: unless-stopped
 
+  gsi_bridge:
+    build:
+      context: ../stratify-analysis-engine
+      dockerfile: Dockerfile
+    command: python scripts/gsi_bridge.py
+    ports:
+      - "3000:3000"
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
   feedback_consumer:
     build:
       context: .
