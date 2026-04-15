@@ -33,18 +33,52 @@ module Api
       end
 
       def serialize_report(report, include_feedbacks: false)
+        scores = report.score.to_s.split('-').map(&:to_i)
+        team_score = scores[0] || 0
+        opp_score = scores[1] || 0
+
+        # Calculations
+        error_count = report.feedbacks.where(severity: 'error').count
+        warn_count = report.feedbacks.where(severity: 'warning').count
+        total_count = report.feedbacks.count
+        calc_score = 100 - (error_count * 10) - (warn_count * 3)
+        calc_score = [0, calc_score].max
+
         data = {
           id: report.match_id,
           map: report.map,
           status: report.status,
           score: report.score,
+          score_team: team_score,
+          score_opponent: opp_score,
+          result: team_score >= opp_score ? 'win' : 'loss',
+          overall_score: calc_score,
           duration_seconds: report.duration_seconds,
-          feedback_count: report.feedbacks.size,
+          feedback_count: total_count,
           created_at: report.created_at
         }
 
         if include_feedbacks
-          data[:feedbacks] = report.feedbacks.errors_first.map { |f| serialize_feedback(f) }
+          fbs = report.feedbacks.errors_first.map { |f| serialize_feedback(f) }
+          
+          # Grouping for frontend
+          grouped = fbs.group_by { |f| f[:analyzer] }
+          
+          # Summary for frontend
+          summary = {
+            total_errors: total_count,
+            critical_errors: error_count,
+            warnings: warn_count,
+            overall_score: calc_score,
+            top_category: report.feedbacks.group(:category).count.sort_by { |_k, v| -v }.first&.first || "aim",
+            improvement_areas: report.feedbacks.where(severity: 'error').limit(3).pluck(:category).uniq
+          }
+
+          return {
+            match: data,
+            summary: summary,
+            feedbacks_by_analyzer: grouped
+          }
         end
 
         data
@@ -59,7 +93,8 @@ module Api
           title: feedback.title,
           description: feedback.description,
           actionable_tip: feedback.actionable_tip,
-          confidence_score: feedback.confidence_score
+          confidence_score: feedback.confidence_score,
+          created_at: feedback.created_at
         }
       end
     end
