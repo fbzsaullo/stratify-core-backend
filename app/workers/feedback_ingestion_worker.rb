@@ -80,7 +80,7 @@ class FeedbackIngestionWorker
 
     severity_map = { "info" => 0, "warning" => 1, "error" => 2, "success" => 3 }
 
-    Feedback.create!(
+    fb = Feedback.create!(
       match_report:     match_report,
       analyzer:         payload["analyzer"] || "unknown",
       severity:         severity_map[payload["severity"]] || 1,
@@ -92,6 +92,18 @@ class FeedbackIngestionWorker
       raw_payload:      payload
     )
 
-    Rails.logger.info("[FeedbackIngestionWorker] Ingested: #{payload['title']} for match #{match_id}")
+    # Broadcast Live Coach Tip
+    ActionCable.server.broadcast("live_coach_global", {
+      id: fb.id,
+      analyzer: fb.analyzer,
+      severity: payload["severity"] || "warning",
+      category: fb.category,
+      title: fb.title,
+      description: fb.description,
+      actionable_tip: fb.actionable_tip,
+      confidence_score: fb.confidence_score
+    })
+
+    Rails.logger.info("[FeedbackIngestionWorker] Ingested & Broadcasted: #{fb.title}")
   end
 end
