@@ -27,5 +27,8 @@ module StratifyCoreBackend
         resource "*", headers: :any, methods: [:get, :post, :put, :patch, :delete, :options, :head]
       end
     end
+
+    # ActionCable origins for Tauri
+    config.action_cable.allowed_request_origins = [/https:\/\/tauri\.localhost/, /tauri:\/\/localhost/]
   end
 end
